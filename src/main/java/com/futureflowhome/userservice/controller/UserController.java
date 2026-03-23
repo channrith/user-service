@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +35,28 @@ public class UserController {
      */
     @GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDto> me(@AuthenticationPrincipal AuthenticatedUser principal) {
-        UserDto user = userService.getById(principal.getUserId());
+        UserDto user = userService.getByUuid(principal.getUserId());
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * Get user by UUID. Only the authenticated user can read their own profile.
+     * GET /api/v1/users/{uuid}
+     */
+    @GetMapping(path = "/{uuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<UserDto> getByUuid(
+            @PathVariable String uuid,
+            @AuthenticationPrincipal AuthenticatedUser principal) {
+        // Non-admin users can only read their own profile.
+        // Admin users may read any user profile.
+        boolean isAdmin = SecurityContextHolder.getContext().getAuthentication() != null
+                && SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
+
+        if (principal == null || (!principal.getUserId().equals(uuid) && !isAdmin)) {
+            return ResponseEntity.status(403).build();
+        }
+        UserDto user = userService.getByUuid(uuid);
         return ResponseEntity.ok(user);
     }
 
@@ -47,8 +70,8 @@ public class UserController {
         UserDto created = userService.register(request);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(created.getId())
+                .path("/{uuid}")
+                .buildAndExpand(created.getUuid())
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }

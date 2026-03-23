@@ -26,8 +26,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDto getById(Long id) {
-        User user = userRepository.findById(id)
+    public UserDto getByUuid(String uuid) {
+        User user = userRepository.findByUuid(uuid)
                 .orElseThrow(() -> new IllegalStateException("User not found"));
         return toDto(user);
     }
@@ -59,7 +59,7 @@ public class UserService {
 
     private static UserDto toDto(User user) {
         return new UserDto(
-                user.getId(),
+                user.getUuid(),
                 user.getUsername(),
                 user.getEmail(),
                 user.isEmailVerified(),

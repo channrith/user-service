@@ -4,19 +4,20 @@ import java.util.Objects;
 
 /**
  * Principal held in the security context after JWT validation.
+ * Uses user UUID (not internal id) for cross-service identity (e.g. todo-service task ownership).
  */
 public class AuthenticatedUser {
 
-    private final Long userId;
+    private final String userUuid;
     private final String username;
 
-    public AuthenticatedUser(Long userId, String username) {
-        this.userId = userId;
+    public AuthenticatedUser(String userUuid, String username) {
+        this.userUuid = userUuid;
         this.username = username;
     }
 
-    public Long getUserId() {
-        return userId;
+    public String getUserId() {
+        return userUuid;
     }
 
     public String getUsername() {
@@ -28,11 +29,11 @@ public class AuthenticatedUser {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AuthenticatedUser that = (AuthenticatedUser) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(username, that.username);
+        return Objects.equals(userUuid, that.userUuid) && Objects.equals(username, that.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, username);
+        return Objects.hash(userUuid, username);
     }
 }

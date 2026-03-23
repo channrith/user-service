@@ -43,8 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             Claims claims = jwtService.parseToken(token);
             String username = claims.getSubject();
-            Long userId = claims.get("userId", Long.class);
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            String userUuid = claims.get("userId", String.class);
+            if (username != null && userUuid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 String roleName = claims.get("role", String.class);
                 if (roleName == null || roleName.isBlank()) {
                     roleName = "ROLE_USER";
@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 List<SimpleGrantedAuthority> authorities = Collections.singletonList(
                         new SimpleGrantedAuthority(roleName));
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        new AuthenticatedUser(userId, username),
+                        new AuthenticatedUser(userUuid, username),
                         null,
                         authorities);
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

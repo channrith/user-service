@@ -21,12 +21,12 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
-    public String createToken(String username, Long userId, String roleName) {
+    public String createToken(String username, String userUuid, String roleName) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + jwtProperties.getExpirationSeconds() * 1000);
         return Jwts.builder()
                 .subject(username)
-                .claim("userId", userId)
+                .claim("userId", userUuid)
                 .claim("role", roleName)
                 .issuedAt(now)
                 .expiration(expiry)

@@ -4,7 +4,7 @@ import java.time.Instant;
 
 public class UserDto {
 
-    private Long id;
+    private String uuid;
     private String username;
     private String email;
     private boolean emailVerified;
@@ -19,7 +19,7 @@ public class UserDto {
     }
 
     public UserDto(
-            Long id,
+            String uuid,
             String username,
             String email,
             boolean emailVerified,
@@ -29,7 +29,7 @@ public class UserDto {
             Instant createdAt,
             Instant updatedAt,
             Instant deletedAt) {
-        this.id = id;
+        this.uuid = uuid;
         this.username = username;
         this.email = email;
         this.emailVerified = emailVerified;
@@ -41,7 +41,8 @@ public class UserDto {
         this.deletedAt = deletedAt;
     }
 
-    public Long getId() { return id; }
+    public String getUuid() { return uuid; }
+    public void setUuid(String uuid) { this.uuid = uuid; }
     public String getUsername() { return username; }
     public String getEmail() { return email; }
     public boolean isEmailVerified() { return emailVerified; }

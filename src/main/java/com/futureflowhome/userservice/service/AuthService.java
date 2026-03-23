@@ -34,7 +34,7 @@ public class AuthService {
         }
         Role role = user.getRole();
         String roleName = role != null ? role.getName() : "ROLE_USER";
-        String token = jwtService.createToken(user.getUsername(), user.getId(), roleName);
+        String token = jwtService.createToken(user.getUsername(), user.getUuid(), roleName);
         return new LoginResponse(token, jwtService.getExpirationSeconds());
     }
 }
