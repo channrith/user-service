@@ -7,6 +7,7 @@ import com.futureflowhome.userservice.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,7 +55,8 @@ public class UserController {
                 .anyMatch(a -> "ROLE_ADMIN".equals(a.getAuthority()));
 
         if (principal == null || (!principal.getUserId().equals(uuid) && !isAdmin)) {
-            return ResponseEntity.status(403).build();
+            // return ResponseEntity.status(403).build();
+            throw new AccessDeniedException("You do not have permission to access this resource");
         }
         UserDto user = userService.getByUuid(uuid);
         return ResponseEntity.ok(user);

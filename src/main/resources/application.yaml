@@ -20,7 +20,10 @@ spring:
     database-platform: org.hibernate.dialect.MariaDBDialect
     show-sql: true # Logs SQL queries in the console
 
-# JWT (use a long secret in production, e.g. env JWT_SECRET)
+# JWT: RS256 with PKCS#8 RSA private key; JWKS at /.well-known/jwks.json for other services.
+# Set JWT_PRIVATE_KEY_LOCATION if the default path does not match your working directory (e.g. file:jwt-keys/private_pkcs8.pem from repo root).
 jwt:
-  secret: ${JWT_SECRET:VGK9Ui1qwyp1b1GwtmhsZ1USBsglV8fu1pwk0bJCUNw=}
+  issuer: ${JWT_ISSUER_URI:http://localhost:8081}
+  key-id: ${JWT_KEY_ID:futureflow-1}
+  private-key-location: ${JWT_PRIVATE_KEY_LOCATION:file:../jwt-keys/private_pkcs8.pem}
   expiration-seconds: 86400
